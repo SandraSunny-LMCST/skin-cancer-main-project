@@ -86,6 +86,10 @@ ul {
     align-items: center;
 }
 
+li {
+    cursor: pointer;
+}
+
 .arc {
     position: absolute;
     z-index: 1;
@@ -102,4 +106,32 @@ ul {
     background-color: transparent;
     border: 1px solid black;
     padding: 1em;
+}
+
+
+#img-view,
+.container img {
+    height: 100%;
+    width: 100%;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed grey;
+}
+
+.container img {
+    height: 500px;
+    opacity: 0;
+    animation: fadeInRight 1s ease-in-out forwards;
+    animation-delay: 0.1s;
+}
+
+#dropArea {
+    cursor: pointer;
+    width: 500px;
+    height: 300px;
+    text-align: center;
+
 }

@@ -3,17 +3,30 @@ import { doc, getDoc } from "firebase/firestore";
 import { AuthContext } from './context/auth_context';
 import { db } from './firebase';
 import './home.css'
+import { signOut } from "firebase/auth";
+import { auth } from "./firebase";
+
 export default function Home() {
 
   const { currentUser } = useContext(AuthContext);
   const docRef = doc(db, "users", currentUser.uid);
   useEffect(() => {
+    console.log(currentUser.uid)
     const handleLogin = async (e) => {
       const docSnap = await getDoc(docRef);
-
+      console.log(docSnap.data())
     };
     handleLogin();
   }, []);
+  function signout() {
+    signOut(auth)
+      .then(() => {
+        localStorage.removeItem("user");
+        window.location.reload();
+        // naviagte("/login");
+      })
+      .catch((error) => { });
+  }
 
 
   return (
@@ -30,7 +43,12 @@ export default function Home() {
             <ul>
               <li>Home</li>
               <li>History</li>
-              <li>Logout</li>
+              <li> {currentUser && (
+                <a onClick={signout}>
+                  {" "}
+                  Log out
+                </a>
+              )}</li>
             </ul>
           </div>
         </nav>
@@ -55,7 +73,21 @@ export default function Home() {
 
           </div>
           <div class="right">
-            <img src="./ss.png" alt="" srcset="" />
+            <form action="/submit" method="POST" enctype="multipart/form-data">
+              <div class="container">
+
+                <label for="fileInput" id="dropArea">
+                  <input type="file" id="fileInput" accept="image/*" hidden name="image" />
+                  <div id="img-view">
+                    <p>Drag and drop or upload file</p>
+                  </div>
+                  <button type="submit">submit</button>
+
+                </label>
+
+
+              </div>
+            </form>
           </div>
         </div>
       </div></>
