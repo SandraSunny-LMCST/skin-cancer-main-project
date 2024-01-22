@@ -1,37 +1,42 @@
-import React, { useContext, useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
-import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/auth_context";
+import { v4 as uuid } from 'uuid';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { db, storage } from "../firebase";
+import React, { useContext, useState } from 'react'
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./login.css";
-function Login() {
+import { auth } from '../firebase';
+import { AuthContext } from '../context/auth_context';
+import { useNavigate } from "react-router-dom";
+import './login.css'
+import { Link } from 'react-router-dom';
+const Signup = ({ inputs }) => {
+
     const [error, setError] = useState(false);
     const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
     const [password, setPassword] = useState("");
+    const [uid, setuid] = useState();
+    const { currentUser } = useContext(AuthContext)
+    const navigate = useNavigate()
 
-    const naviage = useNavigate();
 
-    const { dispatch } = useContext(AuthContext);
 
-    const handleLogin = async (e) => {
+
+
+    const handleSignup = async (e) => {
         e.preventDefault();
-        await signInWithEmailAndPassword(auth, email, password)
+        await createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                // Signed in
+                // Signed in 
                 const user = userCredential.user;
-                dispatch({ type: "LOGIN", payload: user });
-                console.log(user)
-                notify();
-                naviage("/");
-
-            })
-            .catch((errorMsg) => {
-                const errorMsgCode = errorMsg.code;
-                const errorMsgMessage = errorMsg.message;
-                // ..
-                const notifyError = () => toast.error(errorMsgMessage, {
+                setDoc(doc(db, "users", user.uid), {
+                    email: email,
+                    name: name,
+                    timestamp: serverTimestamp(),
+                });
+                toast('🦄 Successfully created account!', {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -41,21 +46,15 @@ function Login() {
                     progress: undefined,
                     theme: "light",
                 });
-                notifyError();
-
+                navigate('/login')
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // ..
             });
-    };
+    }
 
-    const notify = () => toast.success('👍 Login successful!', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-    });
 
     return (
         <>
@@ -86,40 +85,30 @@ function Login() {
                             against irritants and allergens.</h4>
                         <br />
                         <br />
-                        <Link to={"/signup"}>
+                        <Link to={'/login'}>
                             <button class="upload">
-                                Create an account here 📝
+                                Login Here 🔓
                             </button>
                         </Link>
 
 
                     </div>
                     <div class="right">
-                        <form onSubmit={handleLogin}>
+                        <form onSubmit={handleSignup}>
                             <input type="text" class="upload" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+                            <input type="text" class="upload" placeholder="Name" onChange={(e) => setName(e.target.value)} />
                             <input type="password" class="upload" placeholder="password" onChange={(e) => setPassword(e.target.value)} />
                             <button class="upload" type="submit">
-                                Login 🔓
+                                Create Account 📝
                             </button>
                         </form>
 
                     </div>
                 </div>
             </div>
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
         </>
-    );
+    )
 }
 
-export default Login;
+
+export default Signup

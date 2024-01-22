@@ -6,7 +6,14 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
+import { AuthContext } from "./context/auth_context";
 import { userDetails } from './source/form_source';
+import { useContext } from "react";
+import Login from "./authentication/login";
+import Home from "./home";
+import Signup from "./authentication/signup";
+import UserHistory from "./components/userHistory";
+
 
 function App() {
   const { currentUser } = useContext(AuthContext);
@@ -26,12 +33,12 @@ function App() {
               </RequiredAuth>
             }
           />
-          <Route path="/signup" element={<Details inputs={userDetails} />} />
+          <Route path="/signup" element={<Signup />} />
           <Route
             path="/profile"
             element={
               <RequiredAuth>
-                <UserProfile />
+                <UserHistory />
               </RequiredAuth>
             }
           />

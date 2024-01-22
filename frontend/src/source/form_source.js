@@ -1,8 +1,8 @@
 export const userDetails = [
     {
-        id: "department",
+        id: "email",
         type: "text",
-        placeholder: "Department",
+        placeholder: "email",
     },
     {
         id: "plusTwo",
